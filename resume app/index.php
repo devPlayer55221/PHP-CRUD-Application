@@ -2,6 +2,8 @@
 <?php
 	session_start();
 	include 'pdo.php';
+	include 'util.php';
+	include 'head.php';
 ?>
 <html>
 	<head>
@@ -19,6 +21,7 @@
 		<div class="container">
 			<h1>Mukund Kr Kedia's Resume Registry</h1>
 			<?php
+				flashMessages();
 				if(!isset($_SESSION['user_id']))
 				{
 					echo("<a href='login.php'>Please log in</a>");
@@ -40,11 +43,7 @@
 				}
 				if(isset($_SESSION['user_id']))
 				{
-					if(isset($_SESSION['success']))
-					{
-						echo('<p style="color: green;">'.htmlentities($_SESSION['success'])."</p>\n");
-						unset($_SESSION['success']);
-					}
+					//flashMessages();
 					echo("<a href='logout.php'>Logout</a><br/>");
 					$stmt = $pdo->prepare("SELECT * FROM profile WHERE user_id=:uid");
 					$stmt->execute(array(':uid'=>$_SESSION['user_id']));

@@ -53,6 +53,21 @@
 		<p>Email: <?= $em ?></p>
 		<p>Headline: <?= $he ?></p>
 		<p>Summary: <?= $su ?></p>
+		<p>Position<br/>
+			<ul>
+				<?php
+					$stmt = $pdo->prepare("SELECT * FROM position WHERE profile_id=:pid");
+					$stmt->execute(array(":pid"=>$profile_id));
+					if($stmt->rowCount() > 0)
+						{
+							while($row = $stmt->fetch(PDO::FETCH_ASSOC))
+							{
+								echo("<li>".$row['year'].": ".$row['description']."</li>");
+							}
+						}
+				?>
+			</ul>
+		</p>
 		<a href="index.php">Done</a>
 	</body>
 </html>

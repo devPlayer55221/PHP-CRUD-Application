@@ -2,6 +2,8 @@
 <!DOCTYPE html>
 <?php
 	include 'pdo.php';
+	include 'head.php';
+	include 'util.php';
 	session_start();
 	if(isset($_POST['cancel']))
 	{
@@ -24,11 +26,7 @@
 	<body>
 			<h1>Please Log In</h1>
 			<?php
-				if(isset($_SESSION["error"]))
-				{
-					echo('<p style="color: red;">'.htmlentities($_SESSION['error'])."</p>\n");
-					unset($_SESSION["error"]);
-				}
+				flashMessages();
 			?>
 			<form method="POST">
 				Email <input type="text" name="email" id="email"><br/><br/>
