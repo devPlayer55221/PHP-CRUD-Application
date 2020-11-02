@@ -2,10 +2,12 @@
 <?php
 	session_start();
 	include 'pdo.php';
+	include 'util.php';
+	include 'head.php';
 ?>
 <html>
 	<head>
-		<title>Mukund Kr Kedia</title>
+		<title>Mukund Kr Kedia's Resume Registry</title>
 		<style>
 			body {
 				font-family: arial;
@@ -17,50 +19,52 @@
 	</head>
 	<body>
 		<div class="container">
-			<h1>Welcome to the Automobiles Database</h1>
+			<h1>Mukund Kr Kedia's Resume Registry</h1>
 			<?php
-				if(!isset($_SESSION['name']))
+				flashMessages();
+				if(!isset($_SESSION['user_id']))
 				{
-					echo("<p><a href='login.php'>Please log in</a></p>
-					<p>Attempt to <a href='add.php'>add data</a> without logging in</p>");
-				}
-				if(isset($_SESSION['name']))
-				{
-					if(isset($_SESSION['success']))
-					{
-						echo('<p style="color: green;">'.htmlentities($_SESSION['success'])."</p>\n");
-						unset($_SESSION['success']);
-					}
-					$stmt = $pdo->query("SELECT * FROM autos");
-					if($stmt->rowCount() == 0)
-					{
-						echo("<p>No rows found</p>");
-						echo("<a href='add.php'>Add New Entry</a><br/>");
-						echo("<a href='logout.php'>Logout</a>");
-					}
-					else
+					echo("<a href='login.php'>Please log in</a>");
+					$stmt = $pdo->prepare("SELECT * FROM profile");
+					if($stmt->rowCount() > 0)
 					{
 						echo('<table border="1">'."\n");
-						echo("<tr><td>Make</td><td>Model</td><td>Year</td><td>Mileage</td><td>Action</td></tr>");
+						echo("<tr><td>Name</td><td>Headline</td></tr>");
 						while($row = $stmt->fetch(PDO::FETCH_ASSOC))
 						{
-							echo "<tr><td>";
-						    echo(htmlentities($row['make']));
-						    echo("</td><td>");
-						    echo(htmlentities($row['model']));
-						    echo("</td><td>");
-						    echo(htmlentities($row['year']));
-						    echo("</td><td>");
-						    echo(htmlentities($row['mileage']));
-						    echo("</td><td>");
-						    echo('<a href="edit.php?autos_id='.$row['autos_id'].'">Edit</a> / ');
-						    echo('<a href="delete.php?autos_id='.$row['autos_id'].'">Delete</a>');
-						    echo("</td></tr>\n");
+							echo("<tr><td>");
+							echo(htmlentities($row['first_name'])." ".htmlentities($row['last_name']));
+							echo("</td><td>");
+							echo(htmlentities($row['headline']));
+							echo("</td></tr>"."\n");
 						}
-						echo('</table><br/>');
-						echo("<a href='add.php'>Add New Entry</a><br/>");
-						echo("<a href='logout.php'>Logout</a>");
+						echo("</table>");
 					}
+				}
+				if(isset($_SESSION['user_id']))
+				{
+					//flashMessages();
+					echo("<a href='logout.php'>Logout</a><br/>");
+					$stmt = $pdo->prepare("SELECT * FROM profile WHERE user_id=:uid");
+					$stmt->execute(array(':uid'=>$_SESSION['user_id']));
+					if($stmt->rowCount() > 0)
+					{
+						echo('<table border="1">'."\n");
+						echo("<tr><td>Name</td><td>Headline</td><td>Action</td></tr>");
+						while($row = $stmt->fetch(PDO::FETCH_ASSOC))
+						{
+							echo("<tr><td>");
+							echo("<a href='view.php?profile_id=".$row['profile_id']."'>".htmlentities($row['first_name'])." ".htmlentities($row['last_name'])."</a>");
+							echo("</td><td>");
+							echo(htmlentities($row['headline']));
+							echo("</td><td>");
+							echo("<a href='edit.php?profile_id=".$row['profile_id']."'>Edit</a>");
+							echo(" <a href='delete.php?profile_id=".$row['profile_id']."'>Delete</a>");
+							echo("</td></tr>"."\n");
+						}
+						echo("</table>");
+					}
+					echo("<a href='add.php'>Add New Entry</a>");
 				}
 			?>
 			

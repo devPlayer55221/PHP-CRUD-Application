@@ -21,30 +21,33 @@
 			if(!isset($_SESSION['name']))
 			{
 				die("ACCESS DENIED");
+				return;
 			}
 			if(isset($_POST['delete']))
 			{
-				$stmt = $pdo->prepare("DELETE FROM autos WHERE autos_id=:autos_id");
-				$stmt->execute(array(':autos_id'=>$_POST['autos_id']));
-				$_SESSION['success'] = "Record deleted";
+				$stmt = $pdo->prepare("DELETE FROM profile WHERE profile_id=:pid");
+				$stmt->execute(array(':pid'=>$_POST['profile_id']));
+				$_SESSION['success'] = "Profile deleted";
 				header("Location: index.php");
 				return;
 			}
-
-			$stmt = $pdo->prepare("SELECT * FROM autos WHERE autos_id=:myid");
-			$stmt->execute(array(":myid"=>$_GET['autos_id']));
+			if(isset($_POST['cancel']))
+			{
+				header("Location: index.php");
+				return;
+			}
+			$stmt = $pdo->prepare("SELECT * FROM profile WHERE profile_id=:pid");
+			$stmt->execute(array(":pid"=>$_GET['profile_id']));
 			$row = $stmt->fetch(PDO::FETCH_ASSOC);
 			if($row == false)
 			{
-				$_SESSION['error'] = "Bad value for autos_id";
+				$_SESSION['error'] = "Bad value for profile_id";
 				header("Location: index.php");
 				return;
 			}
-			$ma = htmlentities($row['make']);
-			$md = htmlentities($row['model']);
-			$ye = htmlentities($row['year']);
-			$mi = htmlentities($row['mileage']);
-			$autos_id = $row['autos_id'];
+			$fn = htmlentities($row['first_name']);
+			$ln = htmlentities($row['last_name']);
+			$profile_id = $row['profile_id'];
 		?>
 		<?php
 			if(isset($_SESSION["error"]))
@@ -53,13 +56,13 @@
 				unset($_SESSION["error"]);
 			}
 		?>
+		<h1>Deleting Profile</h1>
 		<form method="post">
-			Confirm: Deleting <span><?= $ma ?></span>
-			<input type="hidden" name="autos_id" value="<?= $autos_id ?>"/>
-			<p>
-				<input type="submit" name="delete" value="Delete"/>
-				<a href = "index.php">Cancel</a>
-			</p>
+			<p>First Name: <?= $fn ?></p>
+			<p>Last Name: <?= $ln ?></p>
+			<input type="hidden" name="profile_id" value="<?= $profile_id ?>"/>
+			<input type="submit" name="delete" value="Delete"/>
+			<input type="submit" name="cancel" value="Cancel"/>
 		</form>
 	</body>
 </html>
